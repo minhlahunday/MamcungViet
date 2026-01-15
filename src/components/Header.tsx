@@ -1,17 +1,26 @@
 import { useState } from "react";
-import { Menu, X, Phone } from "lucide-react";
+import { Link } from "react-router-dom";
+import { Menu, X, Phone, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/hooks/useAuth";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, role, signOut } = useAuth();
 
   const navItems = [
-    { label: "Trang chủ", href: "#home" },
-    { label: "Dịch vụ", href: "#services" },
-    { label: "Mâm cúng", href: "#offerings" },
-    { label: "Quy trình", href: "#process" },
-    { label: "Liên hệ", href: "#contact" },
+    { label: "Trang chủ", href: "/" },
+    { label: "Dịch vụ", href: "/#services" },
+    { label: "Mâm cúng", href: "/#offerings" },
+    { label: "Quy trình", href: "/#process" },
+    { label: "Liên hệ", href: "/#contact" },
   ];
+
+  const getDashboardLink = () => {
+    if (role === 'admin') return '/admin';
+    if (role === 'supplier') return '/supplier';
+    return '/customer';
+  };
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-b border-border">
@@ -47,9 +56,20 @@ const Header = () => {
               <Phone size={18} />
               <span className="font-medium">1900 xxxx</span>
             </a>
-            <Button variant="default" className="btn-primary-hero !py-2 !px-6">
-              Đặt mâm ngay
-            </Button>
+            {user ? (
+              <>
+                <Button asChild variant="outline" size="sm">
+                  <Link to={getDashboardLink()}><User size={16} className="mr-2" /> Dashboard</Link>
+                </Button>
+                <Button variant="ghost" size="sm" onClick={signOut}>
+                  <LogOut size={16} />
+                </Button>
+              </>
+            ) : (
+              <Button asChild className="btn-primary-hero !py-2 !px-6">
+                <Link to="/auth">Đăng nhập</Link>
+              </Button>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
